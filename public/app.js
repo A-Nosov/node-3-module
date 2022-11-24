@@ -8,15 +8,27 @@ document.addEventListener('click', (event) => {
     }
     if (event.target.dataset.type === 'edit') {
         const id = event.target.dataset.id
-        const editedNote = prompt('Введите новое название', [
-            event.target.dataset.title.trim()
-        ])
-        editNote(id, editedNote)
+        const note = event.target.dataset.title
+        const editedNote = prompt('Введите новое название', [note])
+
+        if (editedNote) {
+            editNote(id, editedNote).then(() => {
+                event.target.closest(
+                    'li'
+                ).firstElementChild.textContent = `${editedNote}`
+            })
+        }
     }
 })
 
 async function editNote(id, title) {
-    await fetch(`/${id}/${title}`, { method: 'PUT' })
+    await fetch(`/`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: id, title: title })
+    })
 }
 
 async function remove(id) {

@@ -40,6 +40,7 @@ app.post('/', async (req, res) => {
 })
 
 app.delete('/:id', async (req, res) => {
+    console.log(req.body)
     await removeNote(req.params.id)
     res.render('index', {
         title: 'Express App',
@@ -48,8 +49,8 @@ app.delete('/:id', async (req, res) => {
     })
 })
 
-app.put('/:id/:title', async (req, res) => {
-    await editNote(req.params.id, req.params.title)
+app.put('/', async (req, res) => {
+    await editNote(req.body.id, req.body.title)
     res.render('index', {
         title: 'Express App',
         notes: await getNotes(),
