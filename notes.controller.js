@@ -13,17 +13,8 @@ async function addNote(title) {
 
     notes.push(note)
 
-    await fs.writeFile(notesPath, JSON.stringify(notes))
+    await saveNotes(notes)
     console.log(chalk.bgGreen('Note was added!'))
-}
-
-async function printNotes() {
-    const notes = await getNotes()
-
-    console.log(chalk.bgBlue('Here is the list of notes:'))
-    notes.forEach((note) => {
-        console.log(chalk.blue(note.id, note.title))
-    })
 }
 
 async function getNotes() {
@@ -35,6 +26,15 @@ async function saveNotes(notes) {
     await fs.writeFile(notesPath, JSON.stringify(notes))
 }
 
+async function printNotes() {
+    const notes = await getNotes()
+
+    console.log(chalk.bgBlue('Here is the list of notes:'))
+    notes.forEach((note) => {
+        console.log(chalk.bgWhite(note.id), chalk.blue(note.title))
+    })
+}
+
 async function removeNote(id) {
     const notes = await getNotes()
 
@@ -44,24 +44,21 @@ async function removeNote(id) {
     console.log(chalk.red(`Note with id="${id}" has been removed.`))
 }
 
-async function editNote(id, title) {
+async function updateNote(noteData) {
     const notes = await getNotes()
-
-    const editedNote = notes.map((note) => {
-        if (note.id === id) {
-            return { title, id }
-        }
-        return note
-    })
-
-    await saveNotes(editedNote)
-    console.log(chalk.bgBlue(`Note has been edited.`))
+    const index = notes.findIndex((note) => note.id === noteData.id)
+    if (index >= 0) {
+        notes[index] = { ...notes[index], ...noteData }
+        await saveNotes(notes)
+        console.log(
+            chalk.bgGreen(`Note with id="${noteData.id}" has been updated!`)
+        )
+    }
 }
 
 module.exports = {
     addNote,
     getNotes,
-    printNotes,
     removeNote,
-    editNote
+    updateNote
 }

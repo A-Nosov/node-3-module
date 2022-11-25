@@ -5,7 +5,7 @@ const {
     addNote,
     getNotes,
     removeNote,
-    editNote
+    updateNote
 } = require('./notes.controller')
 
 const port = 3000
@@ -14,8 +14,8 @@ const app = express()
 app.set('view engine', 'ejs')
 app.set('views', 'pages')
 
-app.use(express.json())
 app.use(express.static(path.resolve(__dirname, 'public')))
+app.use(express.json())
 app.use(
     express.urlencoded({
         extended: true
@@ -40,7 +40,6 @@ app.post('/', async (req, res) => {
 })
 
 app.delete('/:id', async (req, res) => {
-    console.log(req.body)
     await removeNote(req.params.id)
     res.render('index', {
         title: 'Express App',
@@ -49,8 +48,8 @@ app.delete('/:id', async (req, res) => {
     })
 })
 
-app.put('/', async (req, res) => {
-    await editNote(req.body.id, req.body.title)
+app.put('/:id', async (req, res) => {
+    await updateNote({ id: req.params.id, title: req.body.title })
     res.render('index', {
         title: 'Express App',
         notes: await getNotes(),
